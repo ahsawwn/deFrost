@@ -28,7 +28,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'glass rounded-2xl p-6 w-full max-w-lg mx-4',
+      'glass rounded-2xl p-6 w-full max-w-lg mx-4 bg-white shadow-lg',
       className
     )}
     {...props}
@@ -43,11 +43,25 @@ const DialogHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)}
+    className={cn('flex flex-col space-y-1.5 text-center sm:text-left mb-4', className)}
     {...props}
   />
 );
 DialogHeader.displayName = 'DialogHeader';
+
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-4',
+      className
+    )}
+    {...props}
+  />
+);
+DialogFooter.displayName = 'DialogFooter';
 
 const DialogTitle = React.forwardRef<
   HTMLParagraphElement,
@@ -67,11 +81,10 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-gray-400', className)}
+    className={cn('text-sm text-gray-500', className)}
     {...props}
   />
 ));
 DialogDescription.displayName = 'DialogDescription';
 
-export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription };
-
+export { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription };

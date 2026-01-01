@@ -13,13 +13,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     accountsTable: accounts as any,
     sessionsTable: sessions as any,
     verificationTokensTable: verificationTokens as any,
-  }),
+  }) as any,
   session: {
     strategy: 'jwt',
   },
   pages: {
     signIn: '/login',
-    signUp: '/register',
   },
   providers: [
     Google({
@@ -75,7 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          role: user.role || 'customer',
           image: user.image,
         };
       },

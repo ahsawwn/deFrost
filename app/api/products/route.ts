@@ -22,12 +22,13 @@ export async function GET(request: Request) {
     }
 
     if (search) {
-      conditions.push(
-        or(
-          like(products.name, `%${search}%`),
-          like(products.description, `%${search}%`)
-        )
+      const searchCondition = or(
+        like(products.name, `%${search}%`),
+        like(products.description, `%${search}%`)
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     let query = db
@@ -36,7 +37,8 @@ export async function GET(request: Request) {
       .where(and(...conditions));
 
     if (limit) {
-      query = query.limit(parseInt(limit));
+      const allProducts = await query.limit(parseInt(limit));
+      return NextResponse.json(allProducts);
     }
 
     const allProducts = await query;

@@ -1,4 +1,4 @@
-import { pgTable, varchar, integer, boolean, jsonb, timestamp, text, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, integer, boolean, jsonb, timestamp, text, pgEnum, primaryKey, serial, decimal } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Admin-specific enums
@@ -55,4 +55,21 @@ export const adminVerificationTokens = pgTable('admin_verification_token', {
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type AdminAccount = typeof adminAccounts.$inferSelect;
 export type AdminSession = typeof adminSessions.$inferSelect;
+
+export const siteSettings = pgTable('site_settings', {
+  id: serial('id').primaryKey(),
+  key: varchar('key', { length: 255 }).unique().notNull(),
+  value: jsonb('value').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const expenses = pgTable('expenses', {
+  id: serial('id').primaryKey(),
+  description: text('description').notNull(),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  category: varchar('category', { length: 100 }),
+  date: timestamp('date').defaultNow(),
+  recordedBy: varchar('recorded_by').references(() => adminUsers.id),
+});
+
 

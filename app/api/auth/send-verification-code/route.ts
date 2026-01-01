@@ -41,13 +41,6 @@ export async function POST(request: Request) {
       ...(process.env.NODE_ENV === 'development' && { code }),
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      );
-    }
-
     console.error('Error sending verification code:', error);
     return NextResponse.json(
       { error: 'Failed to send verification code' },

@@ -16,7 +16,7 @@ export const { handlers: adminHandlers, auth: adminAuth, signIn: adminSignIn, si
     accountsTable: adminAccounts as any,
     sessionsTable: adminSessions as any,
     verificationTokensTable: adminVerificationTokens as any,
-  }),
+  }) as any,
   session: {
     strategy: 'jwt',
   },
@@ -103,7 +103,7 @@ export const { handlers: adminHandlers, auth: adminAuth, signIn: adminSignIn, si
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          role: user.role || 'admin',
           image: user.image,
         };
       },

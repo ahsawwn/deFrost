@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, decimal, boolean, jsonb, timestamp, text, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, decimal, boolean, jsonb, timestamp, text, pgEnum, primaryKey, foreignKey } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { adminUsers } from './admin-schema';
 
@@ -7,6 +7,7 @@ export const userRoleEnum = pgEnum('user_role', ['customer', 'admin', 'manager',
 export const orderStatusEnum = pgEnum('order_status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled']);
 export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'paid', 'failed', 'refunded']);
 export const paymentMethodEnum = pgEnum('payment_method', ['cash', 'card', 'upi', 'netbanking']);
+export const customerTypeEnum = pgEnum('customer_type', ['regular', 'vip', 'wholesale', 'walk-in']);
 
 // Users (NextAuth compatible)
 export const users = pgTable('user', {
@@ -16,6 +17,7 @@ export const users = pgTable('user', {
   emailVerified: timestamp('email_verified'),
   password: varchar('password'),
   role: userRoleEnum('role').default('customer'),
+  customerType: customerTypeEnum('customer_type').default('regular'),
   image: varchar('image'),
   phone: varchar('phone', { length: 20 }),
   address: jsonb('address'),
@@ -25,10 +27,10 @@ export const users = pgTable('user', {
 
 // NextAuth additional tables
 export const accounts = pgTable('account', {
-  userId: varchar('user_id').references(() => users.id),
-  type: varchar('type'),
-  provider: varchar('provider'),
-  providerAccountId: varchar('provider_account_id'),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  type: varchar('type').notNull(),
+  provider: varchar('provider').notNull(),
+  providerAccountId: varchar('provider_account_id').notNull(),
   refresh_token: text('refresh_token'),
   access_token: text('access_token'),
   expires_at: integer('expires_at'),
@@ -85,10 +87,15 @@ export const categories = pgTable('categories', {
   slug: varchar('slug', { length: 255 }).unique().notNull(),
   description: text('description'),
   image: varchar('image', { length: 500 }),
-  parentId: integer('parent_id').references(() => categories.id),
+  parentId: integer('parent_id'),
   featured: boolean('featured').default(false),
   createdAt: timestamp('created_at').defaultNow(),
-});
+}, (table) => ({
+  parentReference: foreignKey({
+    columns: [table.parentId],
+    foreignColumns: [table.id],
+  }),
+}));
 
 // Orders
 export const orders = pgTable('orders', {
